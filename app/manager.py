@@ -2,20 +2,21 @@ from fastapi import WebSocket
 
 class ConnectionManager:
     def __init__(self):
-        # pool de conexões exigido
-        self.active_connections: list[WebSocket] = []
+        # Mapeia a conexão física ao nome do usuário
+        self.active_connections: dict[WebSocket, str] = {}
 
-    async def connect(self, websocket: WebSocket):
-        # Aceita a conexão inicial (handshake)
+    def is_user_connected(self, username: str) -> bool:
+        # Verifica se o nome já existe entre os valores do dicionário
+        return username in self.active_connections.values()
+
+    async def connect(self, websocket: WebSocket, username: str):
         await websocket.accept()
-        # Adiciona ao pool para monitoramento
-        self.active_connections.append(websocket)
+        self.active_connections[websocket] = username
 
     def disconnect(self, websocket: WebSocket):
-        # Remove do pool quando a conexão é encerrada
-        self.active_connections.remove(websocket)
+        # Remove do dicionário e retorna o nome para usarmos na mensagem de saída
+        return self.active_connections.pop(websocket, "Usuário desconhecido")
 
     async def broadcast(self, message: str):
-        # Envia a mensagem para todos os outros clientes 
-        for connection in self.active_connections:
+        for connection in self.active_connections.keys():
             await connection.send_text(message)
