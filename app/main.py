@@ -1,8 +1,16 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.responses import HTMLResponse
 from app.manager import ConnectionManager
 
 app = FastAPI()
 manager = ConnectionManager()
+
+# rota para carregar o html do cliente
+@app.get("/")
+async def get():
+    with open("app/static/index.html", "r") as f:
+        return HTMLResponse(f.read())
+
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):

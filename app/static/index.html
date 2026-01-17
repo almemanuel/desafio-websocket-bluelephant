@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chat WebSocket - Bluelephant</title>
+    </head>
+    <body>
+        <h1>WebSocket Chat</h1>
+        
+        <input type="text" id="messageText" autocomplete="off" placeholder="Digite sua mensagem..."/>
+        <button onclick="sendMessage()">Enviar</button>
+
+        <ul id='messages'>
+        </ul>
+
+        <script>
+            // 1. Estabelece a conexão com o servidor (O Handshake)
+            // Usamos 'ws://' em vez de 'http://'
+            var ws = new WebSocket("ws://localhost:8000/ws");
+
+            // 2. Evento: O que acontece quando o servidor envia uma mensagem (Monitoramento)
+            ws.onmessage = function(event) {
+                var messages = document.getElementById('messages');
+                var message = document.createElement('li');
+                var content = document.createTextNode(event.data);
+                message.appendChild(content);
+                messages.appendChild(message);
+            };
+
+            // 3. Evento: Como enviamos mensagens para o servidor 
+            function sendMessage() {
+                var input = document.getElementById("messageText");
+                ws.send(input.value);
+                input.value = ''; // Limpa o campo
+            }
+        </script>
+    </body>
+</html>
