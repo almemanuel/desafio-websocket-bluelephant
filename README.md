@@ -20,7 +20,7 @@ Para atender aos requisitos de qualidade e organização, a solução foi dividi
 2.  **Connection Manager**: Implementei uma classe dedicada para gerenciar o **pool de conexões**. Ela abstrai as operações de:
     * **Handshake**: Aceite da conexão inicial via HTTP e upgrade para o código 101.
     * **Broadcast**: Iteração sobre as conexões ativas para garantir a entrega das mensagens a todos os clientes.
-3.  **Monitoramento e Logs**: O backend monitora o ciclo de vida das conexões (entrada, troca de mensagens e desconexão). Foram utilizados logs no terminal para garantir a observabilidade do sistema sem poluir a interface do usuário.
+3.  **Monitoramento e Logs**: O backend monitora o ciclo de vida das conexões (entrada, troca de mensagens e desconexão). Além das mensagens na UI, também foram utilizados logs no terminal.
 
 
 
@@ -51,7 +51,7 @@ Para atender aos requisitos de qualidade e organização, a solução foi dividi
 
 4.  **Iniciar o servidor**:
     ```bash
-    uvicorn app.main:app --reload
+    uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     ```
 
 5.  **Acessar a aplicação**:
