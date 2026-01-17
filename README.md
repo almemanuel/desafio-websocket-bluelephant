@@ -58,4 +58,4 @@ A solução foi estruturada para ser escalável e fácil de monitorar:
     Abra `http://127.0.0.1:8000` em duas ou mais abas para testar o broadcast.
 
 ---
-Desenvolvido por [Emanuel](https://github.com/almemanuel) como parte do processo seletivo para a Bluelephant AI.
+Desenvolvido por [Emanuel](https://github.com/almemanuel) como parte do processo seletivo para a [Bluelephant AI](https://bluelephantai.com.br/).
