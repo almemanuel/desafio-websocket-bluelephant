@@ -33,8 +33,10 @@ async def websocket_endpoint(websocket: WebSocket):
             data = await websocket.receive_text()
             logger.info(f"\tMensagem recebida de {client_id}: {data}") # log de mensagem
             # Ao receber, faz o broadcast para todos os clientes 
-            await manager.broadcast(f"Usuário diz: {data}")
+            await manager.broadcast(f"{data}")
     except WebSocketDisconnect:
         # Monitora a desconexão para limpar o pool 
         manager.disconnect(websocket)
         logger.info(f"\tCliente desconectado: {client_id}") # Log de saída
+        # broadcast de saída
+        await manager.broadcast(f"SISTEMA: Usuário desconectado")

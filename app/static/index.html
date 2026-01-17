@@ -13,6 +13,7 @@
         </ul>
 
         <script>
+            var username = prompt("Qual o seu nome?") || "Anônimo";
             // 1. Estabelece a conexão com o servidor (O Handshake)
             // Usamos 'ws://' em vez de 'http://'
             var ws = new WebSocket("ws://localhost:8000/ws");
@@ -29,7 +30,7 @@
             // 3. Evento: Como enviamos mensagens para o servidor 
             function sendMessage() {
                 var input = document.getElementById("messageText");
-                ws.send(input.value);
+                ws.send(`${username}: ${input.value}`);
                 input.value = ''; // Limpa o campo
             }
         </script>
