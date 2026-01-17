@@ -147,19 +147,20 @@
 
         function startChat() {
             username = usernameInput.value.trim();
+            
             if (!username) {
                 alert("Por favor, insira um nome para continuar.");
                 return;
             }
-            if (!username) return alert("Nome vazio!");
+
             // Transição de Telas
             loginScreen.style.display = 'none';
             chatScreen.style.display = 'flex';
 
-            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            // Configuração do WebSocket (Usando 127.0.0.1 para estabilidade no WSL)
             const wsUrl = `ws://127.0.0.1:8000/ws/${encodeURIComponent(username)}`;
             
-            console.log("Tentando conectar em:", wsUrl); // Debug no F12
+            console.log("Conectando em:", wsUrl);
             ws = new WebSocket(wsUrl);
 
             ws.onopen = () => console.log("Conectado com sucesso!");
@@ -171,39 +172,49 @@
                 // 1. Tratamento de Erro de Nome Duplicado
                 if (data === "ERRO_NOME_DUPLICADO") {
                     alert("Este nome já está em uso! Por favor, escolha outro.");
-                    // Reseta a interface para o login
                     loginScreen.style.display = 'flex';
                     chatScreen.style.display = 'none';
                     usernameInput.value = ''; 
                     return;
                 }
 
-                // 2. Lógica normal de mensagens
+                // 2. Renderização de Mensagens
                 const msgDiv = document.createElement('div');
+                
                 if (data.startsWith("SISTEMA:")) {
                     msgDiv.className = "message system";
-                    msgDiv.innerText = data;
+                    msgDiv.textContent = data;
                 } else {
                     const parts = data.split(": ");
-                    const sender = parts[0];
-                    const text = parts.slice(1).join(": ");
-                    const isMine = sender === username;
+                    const senderName = parts[0];
+                    const messageText = parts.slice(1).join(": ");
+                    const isMine = senderName === username;
                     
                     msgDiv.className = `message ${isMine ? 'mine' : 'others'}`;
-                    msgDiv.innerHTML = `<span class="sender">${sender}</span>${text}`;
+                    
+                    // elemento do remetente
+                    const senderSpan = document.createElement('span');
+                    senderSpan.className = "sender";
+                    senderSpan.textContent = senderName;
+                    
+                    // balão
+                    msgDiv.appendChild(senderSpan);
+                    msgDiv.append(messageText); 
                 }
                 
                 container.appendChild(msgDiv);
                 container.scrollTop = container.scrollHeight;
             };
 
-            // Monitorar Enter no campo de mensagem
-            messageInput.addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
+            // enter no input de mensagens
+            messageInput.addEventListener("keypress", (e) => { 
+                if (e.key === "Enter") sendMessage(); 
+            });
         }
 
         function sendMessage() {
             const text = messageInput.value.trim();
-            if (text !== "" && ws.readyState === WebSocket.OPEN) {
+            if (text !== "" && ws && ws.readyState === WebSocket.OPEN) {
                 ws.send(`${username}: ${text}`);
                 messageInput.value = '';
             }
